@@ -1,0 +1,10 @@
+{
+  "project": "RAVEL",
+  "phase": "deterministic-fixture-pilot",
+  "max_regression_upper": 0.15,
+  "one_sided_confidence": 0.95,
+  "max_tokens_per_candidate_run": 3000,
+  "max_p95_latency_ms": 2500,
+  "minimum_protected_trials": 100,
+  "candidate_selection_note": "Thresholds illustrative; preregister before real experiments"
+}

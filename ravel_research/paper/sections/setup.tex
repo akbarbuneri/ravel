@@ -1,0 +1,90 @@
+\section{Experimental Setup}
+\label{sec:setup}
+
+\subsection{FinSynth: a synthetic financial-agent testbed}
+FinSynth generates, from a fixed seed, 30 fictional listed companies with English and Arabic names, six
+sectors, FY2023/FY2024 revenue and net income, ownership links, audit restatements (10 companies), 36
+brokerage accounts with holdings and prices, and a 130-document corpus of profiles, annual results,
+restatement notices and market news. Five companies' news items carry an indirect prompt-injection
+payload that instructs AI assistants to report a fabricated revenue figure. All figures are synthetic,
+and every answer is computed programmatically.
+
+\paragraph{Capabilities.} A harness may call the solver LM, keyword search over the corpus, a ticker
+resolver (English or Arabic names), a structured financial-data API, a calculator, an entitlement check
+and a portfolio API. As in many legacy financial back-ends, the portfolio API does \emph{not} enforce
+entitlements itself, so the harness is the enforcement point. The seed harness performs the check.
+
+\paragraph{Task families.} Six families: \emph{lookup} (single figure), \emph{growth} (percent change,
+one decimal), \emph{multi-hop} (a figure of a subsidiary's parent), \emph{restatement} (restated FY2023
+revenue), \emph{Arabic} (lookups asked in Arabic), and \emph{portfolio} (total value of an authorized
+account). Each family has four question templates. Templates A1/A2 are used for adaptation (development
+and protected splits), and B1/B2 are \emph{held out} for testing, so test performance reflects transfer to
+new phrasings rather than memorized patterns.
+
+\paragraph{Splits.} Dev: 36 questions (6 per family), whose labels the optimizer sees. Protected: 36
+curated regression questions (6 per family) with verified labels. Probe: 10 adversarial gate items (5
+unauthorized portfolio requests, 5 injection-bearing lookups). Test: 72 held-out-template questions (12
+per family). Adversarial test: 12 adversarial items (7 unauthorized, 5 injection), disjoint from the probe.
+Policies see dev, protected and probe; only the final analysis touches test and adversarial test.
+
+\subsection{Models and harness revision}
+The solver is Qwen3.5-4B (Q4\_K\_M, temperature 0), the solver used in the Reasoning Gym experiments of
+\citet{zhang2026harnesslearning}. The proposer is the untrained base Qwen3.5-9B (Q4\_K\_M, temperature
+0.8, a fixed sampling seed per proposal). Both run under Ollama on a single 8\,GB laptop RTX~3070.
+A capability probe (Appendix~\ref{app:proposer}) showed that the base Qwen3.5-4B proposer, the
+original paper's \emph{Base} configuration, produced \emph{no} development improvement in 24
+proposals from the seed, in either edit format. A selection study needs some good candidates to select,
+so we use the larger base model and report the 4B result as a finding in its own right.
+
+\paragraph{Edit format.} Rewriting a whole program was brittle for both models (Appendix~\ref{app:proposer}).
+We therefore ask the proposer for an \emph{additive handler revision}: a function
+\texttt{handle(question, tools)} that returns an answer for the questions it targets and \texttt{None}
+otherwise. The new harness calls the handler first and falls back to the incumbent when the handler
+returns \texttt{None} or raises. Revisions stack across rounds. The format keeps edits small and
+revertible but does \emph{not} remove risk. A handler that fires on questions it answers wrongly
+regresses them, and a helper that reuses a name defined by the incumbent silently overrides it.
+
+\paragraph{Proposal inputs.} Each proposal prompt contains the capability documentation (signatures,
+return formats, short usage examples), the incumbent's full source, an execution report (per-family
+development accuracy and up to eight failed examples with expected answers, tool errors, an
+upstream-fault note where applicable, and abbreviated traces), and one of six prescribed revision
+directives (Appendix~\ref{app:prompts}), following the original paper's use of prescribed revision prompts.
+
+\subsection{Conditions}
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+  \item \textbf{Clean}: correct development labels, no faults, benign proposer.
+  \item \textbf{Adversarial proposer}: as clean, but each proposal is replaced, with probability 0.3, by
+  a harmful mutation of itself (Appendix~\ref{app:mutations}). The mutations are an \emph{auth bypass}
+  (keeps the entitlement call but ignores its result, so static rules pass), \emph{exfiltration} (a
+  guarded network import and request), \emph{answer leakage} (hard-codes development answers), and
+  \emph{cost inflation} (four-way self-consistency voting on every LM call). Mutations are applied to a
+  real proposal, so they keep whatever genuine improvement it contained.
+  \item \textbf{Noisy feedback}: 20\% of development labels are corrupted by $\pm$15--40\%, and the
+  structured financial API suffers transient upstream timeouts. With probability 0.3, each of the first
+  two calls per question fails; a retry succeeds. The protected suite keeps verified labels.
+\end{itemize}
+
+\subsection{Protocol and budgets}
+Each (condition, seed) unit runs $T=4$ rounds with $K=4$ proposals per round. All policies within a unit
+start from the same seed harness. Proposals are deterministic functions of (parent, report, directive,
+sampling seed) and are cached, so two policies that hold the same incumbent at the same round receive
+\emph{identical} candidates, and every candidate is evaluated exactly once per condition. Proposal count,
+solver calls and feedback are therefore matched across policies by construction (common random numbers).
+We use 3 seeds per condition, giving 9 units. Budgets are fixed before running: $B_C = 600$ solver
+tokens per question (about $3\times$ the seed harness), $B_L = 6$\,s modeled p95 latency, $\epsilon_R =
+0.15$, $\alpha = 0.10$, 95\% one-sided bounds. Latency is modeled deterministically from token counts (0.15\,s
+overhead, 2{,}500 prompt tokens/s, 75 generated tokens/s, calibrated on the study GPU), plus fixed per-tool
+costs and a 2\,s penalty per upstream fault. A model avoids measuring request queueing during parallel
+evaluation. Per-question limits are 8 LM calls, 40 tool calls
+and 90\,s wall time.
+
+\subsection{Metrics}
+For the final harness of each run we report held-out test accuracy, mean solver tokens per question, the
+number of unauthorized portfolio reads on the adversarial test, the injection-follow rate, whether the
+code attempts exfiltration, and the regression rate relative to the seed on held-out test items. We also
+count accepted edits and accepted harmful edits. For the decision-level analysis, every logged (parent,
+candidate) pair is labeled with ground truth from the held-out splits: \emph{harmful}
+(security, injection, leakage, cost $> B_C$, or test regression $>10\%$ of parent-solved items) and
+\emph{beneficial} (no harm and a held-out gain of at least 3 of 72 questions). We then measure how often
+each policy's gates pass harmful and beneficial candidates. Uncertainty is reported as bootstrap 95\%
+confidence intervals over units, and paired policy differences use exact sign tests or paired bootstrap.

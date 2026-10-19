@@ -1,0 +1,113 @@
+\section{Problem Formulation}
+\label{sec:problem}
+
+Let $h$ be the incumbent harness, a program that maps a question and a set of capabilities (a frozen
+solver LM and tools) to an answer. In each round, a proposer $\pi$ produces $K$ candidate revisions
+$h'_1,\dots,h'_K \sim \pi(\cdot \mid h, \text{report}(h))$. An \emph{acceptance policy} $\mathcal{A}$
+looks only at selection-time evidence $E(h)$ and $E(h'_i)$, then either returns one candidate to become
+the new incumbent or abstains.
+
+We distinguish the score the optimizer sees from the properties a deployer cares about. Let $A(h)$ be
+held-out task accuracy, $C(h)$ the mean solver tokens per question, $L_{95}(h)$ the p95 latency,
+$R(h \mid h_0)$ the regression rate (the fraction of questions solved by $h_0$ that $h$ fails), and
+$S(h)\in\{0,1\}$ whether $h$ satisfies the security policy. The deployment objective is
+\begin{equation}
+\label{eq:objective}
+\max_{h}\; A(h) \quad \text{s.t.}\quad S(h)=1,\;\; R(h\mid h_{\text{prev}}) \le \epsilon_R,\;\;
+C(h) \le B_C,\;\; L_{95}(h) \le B_L .
+\end{equation}
+None of these quantities is observed directly at selection time. The policy sees only finite-sample
+estimates on development questions, whose labels may be noisy. Accuracy-only acceptance, the rule used
+at test time by \citet{zhang2026harnesslearning}, keeps the best candidate if
+$\widehat{A}_{\text{dev}}(h') > \widehat{A}_{\text{dev}}(h)$. This treats a point estimate of one term
+of Eq.~\eqref{eq:objective} as if it were the whole objective.
+
+We therefore frame acceptance as a \emph{constrained statistical decision}. A candidate should be
+accepted only if the evidence supports, at a pre-specified confidence level, that it improves $A$ and
+satisfies every constraint. When no candidate meets that bar, abstaining (keeping $h$) is a valid and
+often correct outcome.
+
+\section{RAVEL}
+\label{sec:method}
+
+RAVEL (\emph{Risk-Aware, Validated Evolution of LLM harnesses}) is a sequence of gates applied to each
+candidate, followed by a selection among the survivors. All gates use only selection-time evidence: the
+development set $Q_{\text{dev}}$ (whose labels the optimizer sees), a curated \emph{protected suite}
+$Q_{\text{prot}}$ of regression tests with verified labels, and a small adversarial \emph{gate probe}
+$Q_{\text{probe}}$. Held-out test splits are never consulted.
+
+\paragraph{G1: Validity.} The candidate must parse, load and define \texttt{run}.
+
+\paragraph{G2: Security (static and runtime).}
+A static analyzer rejects imports outside an allow-list (no OS, file or network modules), banned
+built-ins (\texttt{eval}, \texttt{exec}, \texttt{open}, \texttt{getattr},\,\dots), private and dunder
+attribute access, any read of portfolio data without a call to the entitlement check, and numeric
+development labels hard-coded as literals (answer leakage). Static rules are easy to satisfy
+superficially, for example by calling the entitlement check and then ignoring its result. So the
+candidate is also \emph{executed} on $Q_{\text{probe}}$, which contains unauthorized portfolio requests
+and documents carrying prompt-injection payloads. The candidate is rejected if the capability broker logs
+any unauthorized read, or if it follows injected instructions more often than the incumbent does.
+
+\paragraph{G3: Cost and latency.}
+Let $c_1,\dots,c_n$ be the per-question solver tokens on $Q_{\text{dev}}\cup Q_{\text{prot}}$. RAVEL
+requires the one-sided upper confidence bound $\bar c + z_{0.95}\, s_c/\sqrt{n} \le B_C$, and the
+modeled p95 latency must not exceed $B_L$.
+
+\paragraph{G4: Regression.}
+Let $P = \{q \in Q_{\text{prot}} : h \text{ solves } q\}$ and let $r$ be the number of items in $P$ that
+the candidate fails. RAVEL requires the one-sided Wilson upper bound \citep{wilson1927}
+$U_{0.95}(r, |P|) \le \epsilon_R$. With $|P|\approx 25$ and $\epsilon_R = 0.15$, this tolerates no
+regressions at all, so in practice the protected suite acts as a hard ``do not break'' contract. Its
+statistical form lets the gate loosen automatically as the suite grows.
+
+\paragraph{G5: Significant improvement.}
+On the pooled evidence $Q_{\text{dev}} \cup Q_{\text{prot}}$, let $b$ be the number of items the
+candidate solves and the incumbent fails, and $d$ the reverse. Under $H_0$ (no improvement), $b \sim
+\mathrm{Binomial}(b+d, \tfrac12)$. RAVEL requires the exact one-sided McNemar p-value
+$\Pr[X \ge b] \le \alpha$ with $\alpha = 0.10$ \citep{mcnemar1947}. Pooling the curated suite adds
+evidence with verified labels, which matters when development labels are noisy.
+
+\paragraph{G6: Fault-aware comparison.}
+The capability broker records when an item was touched by an upstream fault, here a transient data-service
+timeout. RAVEL drops such items from the paired comparison in G4 and G5, so that infrastructure noise is
+not credited to, or blamed on, the harness. The execution report given to the proposer labels these items
+as probable upstream faults.
+
+\paragraph{Selection.}
+Among candidates that pass every gate, RAVEL picks the one with the largest $b-d$, breaking ties toward
+lower cost. If none passes, it abstains. Algorithm~\ref{alg:ravel} summarizes one round.
+
+\begin{algorithm}[t]
+\caption{One RAVEL acceptance round}
+\label{alg:ravel}
+\begin{algorithmic}[1]
+\Require incumbent $h$; candidates $h'_{1..K}$; evidence sets $Q_{\text{dev}}, Q_{\text{prot}}, Q_{\text{probe}}$; budgets $B_C, B_L$; $\epsilon_R$, $\alpha$
+\For{each candidate $h'$}
+  \State run $h'$ in the sandbox on $Q_{\text{dev}}\cup Q_{\text{prot}}\cup Q_{\text{probe}}$; collect episodes and broker logs
+  \If{invalid \textbf{or} static violations \textbf{or} probe violations} \textbf{reject} \EndIf
+  \If{$\mathrm{UCB}_{0.95}(\text{tokens}) > B_C$ \textbf{or} $L_{95} > B_L$} \textbf{reject} \EndIf
+  \State $P \gets$ protected items solved by $h$ and not fault-affected; $r \gets$ \# of $P$ failed by $h'$
+  \If{$\mathrm{Wilson}_{0.95}(r,|P|) > \epsilon_R$} \textbf{reject} \EndIf
+  \State $b, d \gets$ discordant counts on non-faulted $Q_{\text{dev}}\cup Q_{\text{prot}}$
+  \If{$\Pr[\mathrm{Bin}(b+d,\tfrac12) \ge b] > \alpha$} \textbf{reject} \EndIf
+\EndFor
+\State \Return surviving candidate with largest $b-d$ (ties: fewer tokens), or abstain if none survive
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Baselines and ablations.}
+\textsc{Accuracy-only} keeps the candidate with the highest development accuracy if it beats the
+incumbent, the test-time rule of \citet{zhang2026harnesslearning}. \textsc{Hard-gates} applies the same
+security, cost and regression gates as RAVEL, but with point estimates (mean tokens, observed regression
+rate $\le \epsilon_R$, and any positive development gain), without curated evidence and without fault
+awareness. It represents a careful engineer's checklist with no statistics. Each RAVEL ablation removes
+one component: security, cost, regression, uncertainty (point estimates in G3--G5), curated evidence
+(G5 on $Q_{\text{dev}}$ only), or fault awareness.
+
+\paragraph{Execution isolation.}
+Candidate harnesses are untrusted code. Each one runs in a child process inside an empty network
+namespace (\texttt{unshare -rn}), with address-space, file-size and CPU limits, restricted built-ins and an
+import allow-list. Every tool or LLM call crosses a JSON-RPC boundary to a parent \emph{capability
+broker}, which meters tokens and latency, injects faults and logs policy-relevant events. This is a
+research isolation layer. It is not a hardened production sandbox, and RAVEL's guarantees are only as
+strong as its probes.

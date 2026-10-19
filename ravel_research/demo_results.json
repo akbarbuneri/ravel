@@ -1,0 +1,80 @@
+{
+  "metadata": {
+    "study": "illustrative fixture only",
+    "real_llm_experiments": false
+  },
+  "candidates": [
+    {
+      "name": "accurate_but_unsafe",
+      "successes": 84,
+      "trials": 100,
+      "protected_regressions": 0,
+      "protected_trials": 100,
+      "tokens": 1500,
+      "latency_ms_p95": 1200,
+      "security_checks_passed": false,
+      "edit_applies": true,
+      "accuracy": 0.84,
+      "wilson_regression_upper": 0.026342720783174303,
+      "accuracy_only_accept": true,
+      "ravel_decision": [
+        false,
+        "security_gate"
+      ]
+    },
+    {
+      "name": "accurate_but_expensive",
+      "successes": 88,
+      "trials": 100,
+      "protected_regressions": 0,
+      "protected_trials": 100,
+      "tokens": 7000,
+      "latency_ms_p95": 3300,
+      "security_checks_passed": true,
+      "edit_applies": true,
+      "accuracy": 0.88,
+      "wilson_regression_upper": 0.026342720783174303,
+      "accuracy_only_accept": true,
+      "ravel_decision": [
+        false,
+        "token_budget"
+      ]
+    },
+    {
+      "name": "accurate_but_regressive",
+      "successes": 83,
+      "trials": 100,
+      "protected_regressions": 12,
+      "protected_trials": 100,
+      "tokens": 1800,
+      "latency_ms_p95": 1350,
+      "security_checks_passed": true,
+      "edit_applies": true,
+      "accuracy": 0.83,
+      "wilson_regression_upper": 0.1836944596756501,
+      "accuracy_only_accept": true,
+      "ravel_decision": [
+        false,
+        "regression_confidence_gate"
+      ]
+    },
+    {
+      "name": "balanced_candidate",
+      "successes": 78,
+      "trials": 100,
+      "protected_regressions": 0,
+      "protected_trials": 100,
+      "tokens": 2200,
+      "latency_ms_p95": 1750,
+      "security_checks_passed": true,
+      "edit_applies": true,
+      "accuracy": 0.78,
+      "wilson_regression_upper": 0.026342720783174303,
+      "accuracy_only_accept": true,
+      "ravel_decision": [
+        true,
+        "accepted_on_measured_tests"
+      ]
+    }
+  ]
+}

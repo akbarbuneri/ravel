@@ -1,0 +1,60 @@
+\section{Introduction}
+\label{sec:intro}
+
+A language-model agent is defined jointly by its model and its \emph{harness}: the executable program
+that decides what the model sees, which tools it may call, and how control flows between steps.
+Recent work treats the harness as an object of optimization. Systems such as AFlow, Meta-Harness and
+AutoHarness search over harness code using execution feedback
+\citep{zhang2025aflow,lee2026metaharness,lou2026autoharness}, and \emph{harness learning}
+\citep{zhang2026harnesslearning} goes further, training a proposer model with reinforcement learning to
+revise a frozen solver's harness. That work shows that a 4B proposer can learn revisions that transfer
+to unseen reasoning families and question-answering benchmarks.
+
+These methods share an acceptance rule that is almost always left implicit. A revision is kept if it raises a
+task score on development questions. In harness learning the training reward is the score of the revised
+harness plus a validity bonus, $r_i = J(h'_i; Q_{\text{score}}) + v_i$, and at test time a revision is
+``kept only if development score improves'' \citep{zhang2026harnesslearning}. That is a reasonable
+proxy on a benchmark. It is a poor acceptance criterion for a system that will be deployed, for four
+reasons.
+\begin{enumerate}[leftmargin=*,itemsep=1pt]
+  \item \textbf{Unmeasured properties are unprotected.} A revision can raise accuracy while removing an
+  entitlement check, importing a network library, memorising development answers, or multiplying the
+  number of model calls. None of these show up in a development score.
+  \item \textbf{Small development sets make ``improves'' noisy.} With a few dozen scoring questions, a
+  one- or two-question improvement is often noise, and a greedy keep-if-better loop accumulates that noise
+  over rounds.
+  \item \textbf{Gains can be bought with regressions.} A revision can solve a new question type while
+  breaking a capability that already worked, and the aggregate score can still go up.
+  \item \textbf{Feedback is not always trustworthy.} Labels may be wrong and upstream services may fail
+  intermittently, so some ``failures'' are not harness bugs at all.
+\end{enumerate}
+
+This paper studies the \emph{acceptance} step on its own. Our question is not how to generate better
+revisions but which generated revisions deserve to be accepted. We hold the proposer, its inputs and the
+evaluation budget fixed and vary only the acceptance policy. This isolates a decision that every
+harness-optimization method makes, and lets us measure what each guard costs and what it prevents.
+
+\paragraph{Contributions.}
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+  \item \textbf{RAVEL}, an acceptance policy for harness revisions that combines (i) static and runtime
+  security gates, (ii) a one-sided Wilson bound on the regression rate over a curated protected suite,
+  (iii) an upper confidence bound on per-question cost plus a latency budget, (iv) an exact paired sign
+  test for improvement that pools development and curated evidence, and (v) fault-aware comparison that
+  discounts items affected by upstream failures (\S\ref{sec:method}).
+  \item \textbf{FinSynth}, a fully synthetic and deterministic financial-agent testbed. It has six task
+  families including Arabic questions, an entitlement-sensitive portfolio API, prompt-injection documents,
+  restatements, transient upstream faults, label noise, and held-out templates for testing (\S\ref{sec:setup}).
+  \item \textbf{A matched-budget empirical study} with real LLM proposals from an untrained
+  Qwen3.5-9B and a real Qwen3.5-4B solver (the solver of the Reasoning Gym experiments of
+  \citet{zhang2026harnesslearning}). Generated code runs in a network-isolated sandbox. We compare
+  accuracy-only acceptance, point-estimate hard gates, and RAVEL under clean, adversarial-proposer and
+  noisy-feedback conditions, both as multi-round trajectories and as a decision-level analysis of every
+  candidate, with component ablations (\S\ref{sec:results}).
+  \item \textbf{An open, reproducible artifact.} All candidate programs, evaluation traces, decisions and
+  LLM responses are logged and cached, so every number in this paper can be regenerated on a single
+  consumer GPU.
+\end{itemize}
+
+We aim to be clear about scope. RAVEL's security gates are measured test-suite constraints, not proofs
+of safety. Our environment is synthetic, and our results concern acceptance decisions over an untrained
+proposer's revisions, not a trained proposer.

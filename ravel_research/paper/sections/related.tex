@@ -1,0 +1,51 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Harness optimization and learned editors.}
+DSPy compiles declarative pipelines of LM calls \citep{khattab2024dspy}, and AFlow searches over
+code-represented workflows \citep{zhang2025aflow}. Meta-Harness and AutoHarness revise or synthesize
+harness code from execution feedback \citep{lee2026metaharness,lou2026autoharness}. Harness-R1 trains an
+editor with SFT and GRPO against a frozen target agent \citep{shao2026harnessr1}, and JIT-Agent learns
+task-conditioned harness generation, repair and evolution with rewards that also account for latency and
+cost \citep{zhang2026jitagent}. Harness learning \citep{zhang2026harnesslearning} casts revision as
+meta-learning over executable programs and is the starting point of this paper. These works focus on
+\emph{producing} better revisions. We focus on \emph{accepting} them, and our policies can be placed
+after any of these proposers.
+
+\paragraph{Evaluation of harness evolution.}
+Several 2026 studies question how harness evolution is evaluated. \citet{wang2026rethinking} examine
+benchmark overfitting under matched feedback and inference budgets. \citet{lin2026updating} separate
+producing an update from benefiting from it. HarnessCompass constrains edits to improve transfer
+\citep{zhang2026harnesscompass}, and Evo-Bench evaluates evolution across held-out task suites
+\citep{huang2026evobench}. HarnessDev evaluates harness creation and evolution with execution-token
+cost and reports unstable gains that only partly transfer \citep{wu2026harnessdev}. EvoHarnessBench
+documents \emph{harness-induced forgetting}, where expanding a harness lowers performance on tasks that
+were already solved \citep{ke2026evoharnessbench}. Our matched-budget protocol and regression
+measurements follow these concerns. We do not claim either as new.
+
+\paragraph{Gated self-evolution.}
+HarnessEvolve is closest to our work \citep{harnessevolve2026}. It combines a quality gate, an
+isolated agent that checks for data leakage and prompt bloat, with a performance gate that requires
+improvement on the current batch without degradation on recent ones. \citet{cai2026reliable} argue on theoretical grounds that
+improving previously failed tasks does not guarantee that earlier successes are preserved. They propose a
+condition for adopting an evolved harness and a validation rule that enforces it. Our regression gate is
+an empirical, finite-sample instance of the same concern. RAVEL differs from both in three ways. It replaces point-estimate
+gates with \emph{finite-sample statistical} ones: a Wilson bound on regressions, an upper bound on cost,
+and an exact paired test for improvement. It adds runtime security probes and fault-aware comparison.
+And it is evaluated by holding the proposer fixed and varying only the acceptance rule. We regard
+these as complementary designs rather than competing systems, and we do not reproduce HarnessEvolve's
+results.
+
+\paragraph{Self-improving agents and safety.}
+Reflexion and Self-Refine improve outputs from feedback \citep{shinn2023reflexion,madaan2023selfrefine}.
+STOP and the Darwin G\"odel Machine let agents modify their own code
+\citep{zelikman2024stop,zhang2025dgm}, and the DGM authors note the need for sandboxing and human
+oversight. Indirect prompt injection, where instructions are hidden in retrieved content, is a
+well-documented threat to tool-using agents \citep{greshake2023injection}. Our adversarial-proposer
+condition goes further and assumes the \emph{proposer itself} may emit harmful code, a threat model
+appropriate whenever revisions come from a model whose outputs are not fully trusted.
+
+\paragraph{Statistical acceptance testing.}
+We use the Wilson score interval \citep{wilson1927} for regression rates and the exact McNemar (sign)
+test \citep{mcnemar1947} for paired improvements. Both are standard. What we contribute is applying
+them as acceptance gates in a harness-evolution loop and measuring what they cost.

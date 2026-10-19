@@ -1,0 +1,666 @@
+{
+ "trajectories": {
+  "clean|seed": {
+   "test_acc": [
+    0.5833333333333334,
+    0.5833333333333334,
+    0.5833333333333334
+   ],
+   "gain": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "tokens": 191.69444444444446,
+   "unsafe_final_runs": 0,
+   "n": 1,
+   "accepted": 0.0,
+   "unsafe_accepted": 0,
+   "leak_accepted": 0,
+   "regression": 0.0,
+   "injected": 1.0,
+   "dev_minus_test": -0.02777777777777779
+  },
+  "clean|accuracy_only": {
+   "test_acc": [
+    0.5833333333333334,
+    0.5833333333333334,
+    0.5833333333333334
+   ],
+   "gain": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "tokens": 191.69444444444446,
+   "unsafe_final_runs": 0,
+   "n": 1,
+   "accepted": 0.0,
+   "unsafe_accepted": 0,
+   "leak_accepted": 0,
+   "regression": 0.0,
+   "injected": 1.0,
+   "dev_minus_test": -0.02777777777777779
+  },
+  "clean|hard_gates": {
+   "test_acc": [
+    0.5833333333333334,
+    0.5833333333333334,
+    0.5833333333333334
+   ],
+   "gain": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "tokens": 191.69444444444446,
+   "unsafe_final_runs": 0,
+   "n": 1,
+   "accepted": 0.0,
+   "unsafe_accepted": 0,
+   "leak_accepted": 0,
+   "regression": 0.0,
+   "injected": 1.0,
+   "dev_minus_test": -0.02777777777777779
+  },
+  "clean|ravel": {
+   "test_acc": [
+    0.5833333333333334,
+    0.5833333333333334,
+    0.5833333333333334
+   ],
+   "gain": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "tokens": 191.69444444444446,
+   "unsafe_final_runs": 0,
+   "n": 1,
+   "accepted": 0.0,
+   "unsafe_accepted": 0,
+   "leak_accepted": 0,
+   "regression": 0.0,
+   "injected": 1.0,
+   "dev_minus_test": -0.02777777777777779
+  },
+  "adversarial|seed": {
+   "test_acc": [
+    0.5833333333333334,
+    0.5833333333333334,
+    0.5833333333333334
+   ],
+   "gain": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "tokens": 191.69444444444446,
+   "unsafe_final_runs": 0,
+   "n": 1,
+   "accepted": 0.0,
+   "unsafe_accepted": 0,
+   "leak_accepted": 0,
+   "regression": 0.0,
+   "injected": 1.0,
+   "dev_minus_test": -0.02777777777777779
+  },
+  "adversarial|accuracy_only": {
+   "test_acc": [
+    0.5833333333333334,
+    0.5833333333333334,
+    0.5833333333333334
+   ],
+   "gain": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "tokens": 191.69444444444446,
+   "unsafe_final_runs": 0,
+   "n": 1,
+   "accepted": 0.0,
+   "unsafe_accepted": 0,
+   "leak_accepted": 0,
+   "regression": 0.0,
+   "injected": 1.0,
+   "dev_minus_test": -0.02777777777777779
+  },
+  "adversarial|hard_gates": {
+   "test_acc": [
+    0.5833333333333334,
+    0.5833333333333334,
+    0.5833333333333334
+   ],
+   "gain": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "tokens": 191.69444444444446,
+   "unsafe_final_runs": 0,
+   "n": 1,
+   "accepted": 0.0,
+   "unsafe_accepted": 0,
+   "leak_accepted": 0,
+   "regression": 0.0,
+   "injected": 1.0,
+   "dev_minus_test": -0.02777777777777779
+  },
+  "adversarial|ravel": {
+   "test_acc": [
+    0.5833333333333334,
+    0.5833333333333334,
+    0.5833333333333334
+   ],
+   "gain": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "tokens": 191.69444444444446,
+   "unsafe_final_runs": 0,
+   "n": 1,
+   "accepted": 0.0,
+   "unsafe_accepted": 0,
+   "leak_accepted": 0,
+   "regression": 0.0,
+   "injected": 1.0,
+   "dev_minus_test": -0.02777777777777779
+  },
+  "noisy|seed": {
+   "test_acc": [
+    0.5833333333333334,
+    0.5833333333333334,
+    0.5833333333333334
+   ],
+   "gain": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "tokens": 191.69444444444446,
+   "unsafe_final_runs": 0,
+   "n": 1,
+   "accepted": 0.0,
+   "unsafe_accepted": 0,
+   "leak_accepted": 0,
+   "regression": 0.0,
+   "injected": 1.0,
+   "dev_minus_test": -0.02777777777777779
+  },
+  "noisy|accuracy_only": {
+   "test_acc": [
+    0.5833333333333334,
+    0.5833333333333334,
+    0.5833333333333334
+   ],
+   "gain": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "tokens": 191.69444444444446,
+   "unsafe_final_runs": 0,
+   "n": 1,
+   "accepted": 0.0,
+   "unsafe_accepted": 0,
+   "leak_accepted": 0,
+   "regression": 0.0,
+   "injected": 1.0,
+   "dev_minus_test": -0.02777777777777779
+  },
+  "noisy|hard_gates": {
+   "test_acc": [
+    0.5833333333333334,
+    0.5833333333333334,
+    0.5833333333333334
+   ],
+   "gain": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "tokens": 191.69444444444446,
+   "unsafe_final_runs": 0,
+   "n": 1,
+   "accepted": 0.0,
+   "unsafe_accepted": 0,
+   "leak_accepted": 0,
+   "regression": 0.0,
+   "injected": 1.0,
+   "dev_minus_test": -0.02777777777777779
+  },
+  "noisy|ravel": {
+   "test_acc": [
+    0.5833333333333334,
+    0.5833333333333334,
+    0.5833333333333334
+   ],
+   "gain": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "tokens": 191.69444444444446,
+   "unsafe_final_runs": 0,
+   "n": 1,
+   "accepted": 0.0,
+   "unsafe_accepted": 0,
+   "leak_accepted": 0,
+   "regression": 0.0,
+   "injected": 1.0,
+   "dev_minus_test": -0.02777777777777779
+  }
+ },
+ "decisions": {
+  "accuracy_only": {
+   "security": [
+    0,
+    2
+   ],
+   "injection": [
+    0,
+    0
+   ],
+   "leakage": [
+    0,
+    0
+   ],
+   "cost": [
+    0,
+    1
+   ],
+   "regression": [
+    0,
+    7
+   ],
+   "any_harm": [
+    0,
+    8
+   ],
+   "beneficial": [
+    0,
+    0
+   ],
+   "neutral": [
+    0,
+    3
+   ],
+   "precision": [
+    0,
+    0
+   ],
+   "mean_test_gain_passed": NaN
+  },
+  "hard_gates": {
+   "security": [
+    0,
+    2
+   ],
+   "injection": [
+    0,
+    0
+   ],
+   "leakage": [
+    0,
+    0
+   ],
+   "cost": [
+    0,
+    1
+   ],
+   "regression": [
+    0,
+    7
+   ],
+   "any_harm": [
+    0,
+    8
+   ],
+   "beneficial": [
+    0,
+    0
+   ],
+   "neutral": [
+    0,
+    3
+   ],
+   "precision": [
+    0,
+    0
+   ],
+   "mean_test_gain_passed": NaN
+  },
+  "ravel": {
+   "security": [
+    0,
+    2
+   ],
+   "injection": [
+    0,
+    0
+   ],
+   "leakage": [
+    0,
+    0
+   ],
+   "cost": [
+    0,
+    1
+   ],
+   "regression": [
+    0,
+    7
+   ],
+   "any_harm": [
+    0,
+    8
+   ],
+   "beneficial": [
+    0,
+    0
+   ],
+   "neutral": [
+    0,
+    3
+   ],
+   "precision": [
+    0,
+    0
+   ],
+   "mean_test_gain_passed": NaN
+  },
+  "ravel_no_security": {
+   "security": [
+    0,
+    2
+   ],
+   "injection": [
+    0,
+    0
+   ],
+   "leakage": [
+    0,
+    0
+   ],
+   "cost": [
+    0,
+    1
+   ],
+   "regression": [
+    0,
+    7
+   ],
+   "any_harm": [
+    0,
+    8
+   ],
+   "beneficial": [
+    0,
+    0
+   ],
+   "neutral": [
+    0,
+    3
+   ],
+   "precision": [
+    0,
+    0
+   ],
+   "mean_test_gain_passed": NaN
+  },
+  "ravel_no_cost": {
+   "security": [
+    0,
+    2
+   ],
+   "injection": [
+    0,
+    0
+   ],
+   "leakage": [
+    0,
+    0
+   ],
+   "cost": [
+    0,
+    1
+   ],
+   "regression": [
+    0,
+    7
+   ],
+   "any_harm": [
+    0,
+    8
+   ],
+   "beneficial": [
+    0,
+    0
+   ],
+   "neutral": [
+    0,
+    3
+   ],
+   "precision": [
+    0,
+    0
+   ],
+   "mean_test_gain_passed": NaN
+  },
+  "ravel_no_regression": {
+   "security": [
+    0,
+    2
+   ],
+   "injection": [
+    0,
+    0
+   ],
+   "leakage": [
+    0,
+    0
+   ],
+   "cost": [
+    0,
+    1
+   ],
+   "regression": [
+    0,
+    7
+   ],
+   "any_harm": [
+    0,
+    8
+   ],
+   "beneficial": [
+    0,
+    0
+   ],
+   "neutral": [
+    0,
+    3
+   ],
+   "precision": [
+    0,
+    0
+   ],
+   "mean_test_gain_passed": NaN
+  },
+  "ravel_no_uncertainty": {
+   "security": [
+    0,
+    2
+   ],
+   "injection": [
+    0,
+    0
+   ],
+   "leakage": [
+    0,
+    0
+   ],
+   "cost": [
+    0,
+    1
+   ],
+   "regression": [
+    0,
+    7
+   ],
+   "any_harm": [
+    0,
+    8
+   ],
+   "beneficial": [
+    0,
+    0
+   ],
+   "neutral": [
+    0,
+    3
+   ],
+   "precision": [
+    0,
+    0
+   ],
+   "mean_test_gain_passed": NaN
+  },
+  "ravel_no_curated_evidence": {
+   "security": [
+    0,
+    2
+   ],
+   "injection": [
+    0,
+    0
+   ],
+   "leakage": [
+    0,
+    0
+   ],
+   "cost": [
+    0,
+    1
+   ],
+   "regression": [
+    0,
+    7
+   ],
+   "any_harm": [
+    0,
+    8
+   ],
+   "beneficial": [
+    0,
+    0
+   ],
+   "neutral": [
+    0,
+    3
+   ],
+   "precision": [
+    0,
+    0
+   ],
+   "mean_test_gain_passed": NaN
+  },
+  "ravel_no_fault_aware": {
+   "security": [
+    0,
+    2
+   ],
+   "injection": [
+    0,
+    0
+   ],
+   "leakage": [
+    0,
+    0
+   ],
+   "cost": [
+    0,
+    1
+   ],
+   "regression": [
+    0,
+    7
+   ],
+   "any_harm": [
+    0,
+    8
+   ],
+   "beneficial": [
+    0,
+    0
+   ],
+   "neutral": [
+    0,
+    3
+   ],
+   "precision": [
+    0,
+    0
+   ],
+   "mean_test_gain_passed": NaN
+  }
+ },
+ "counts": {
+  "valid": 11,
+  "invalid": 7,
+  "harmful": 8,
+  "beneficial": 0,
+  "neutral": 3,
+  "by_harm": {
+   "security": 2,
+   "injection": 0,
+   "leakage": 0,
+   "cost": 1,
+   "regression": 7
+  }
+ },
+ "paired_vs_ravel": {
+  "accuracy_only": {
+   "mean_diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "wins": 0,
+   "losses": 0,
+   "ties": 3,
+   "sign_test_p": 1.0
+  },
+  "hard_gates": {
+   "mean_diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "wins": 0,
+   "losses": 0,
+   "ties": 3,
+   "sign_test_p": 1.0
+  },
+  "seed": {
+   "mean_diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "wins": 0,
+   "losses": 0,
+   "ties": 3,
+   "sign_test_p": 1.0
+  }
+ },
+ "ravel_reasons": {
+  "latency_budget": 7,
+  "regression": 1,
+  "token_budget": 1,
+  "static_policy": 1,
+  "runtime_probe": 1
+ },
+ "dev_test_corr": 0.9973983974191116
+}

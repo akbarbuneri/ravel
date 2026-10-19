@@ -1,0 +1,35 @@
+{
+ "proposer_probe_4b_rewrite": {
+  "model": "Qwen3.5-4B",
+  "format": "full rewrite",
+  "proposals": 12,
+  "no_code": 0,
+  "load_fail": 3,
+  "runs": 9,
+  "dev_up": 0,
+  "test_up3": 0,
+  "dev_up_test_down": 0
+ },
+ "proposer_probe_4b_handler": {
+  "model": "Qwen3.5-4B",
+  "format": "handler",
+  "proposals": 12,
+  "no_code": 2,
+  "load_fail": 3,
+  "runs": 7,
+  "dev_up": 0,
+  "test_up3": 0,
+  "dev_up_test_down": 0
+ },
+ "proposer_probe_9b_handler": {
+  "model": "Qwen3.5-9B",
+  "format": "handler",
+  "proposals": 12,
+  "no_code": 1,
+  "load_fail": 5,
+  "runs": 6,
+  "dev_up": 3,
+  "test_up3": 0,
+  "dev_up_test_down": 2
+ }
+}
