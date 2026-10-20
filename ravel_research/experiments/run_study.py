@@ -50,7 +50,7 @@ class Study:
         self.pools = self.qb.build()
         self.qmap = {q.qid: q for qs in self.pools.values() for q in qs}
         cache = os.path.join(ROOT, "results", "llm_cache.sqlite")
-        self.solver = LLM(solver_model, cache, num_ctx=8192)
+        self.solver = LLM(solver_model, cache, num_ctx=8192, max_concurrent=4)
         self.prop_llm = LLM(proposer_model, cache, num_ctx=8192)
         self.sandbox = Sandbox(self.world, self.solver, self.qb.authorized, workers=workers)
         self.eval_par, self.prop_par = eval_par, prop_par

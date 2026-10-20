@@ -18,7 +18,7 @@ OLLAMA = "http://localhost:11434/api/chat"
 
 
 class LLM:
-    def __init__(self, model: str, cache_path: str, num_ctx: int = 4096):
+    def __init__(self, model: str, cache_path: str, num_ctx: int = 4096, max_concurrent: int = 2):
         self.model = model
         self.num_ctx = num_ctx
         self._lock = threading.Lock()
@@ -29,12 +29,14 @@ class LLM:
         self.live_calls = 0
         self.cached_calls = 0
         self._inflight: dict[str, threading.Event] = {}
+        # the server runs this model with a single slot; bounding client concurrency avoids long queues and timeouts
+        self._slots = threading.Semaphore(max_concurrent)
 
     def _key(self, payload):
         return hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
     def chat(self, prompt: str, *, system: str | None = None, max_tokens: int = 256,
-             temperature: float = 0.0, seed: int = 0, think: bool = False, timeout: float = 600) -> dict:
+             temperature: float = 0.0, seed: int = 0, think: bool = False, timeout: float = 1800) -> dict:
         msgs = ([{"role": "system", "content": system}] if system else []) + [{"role": "user", "content": prompt}]
         payload = {"model": self.model, "messages": msgs, "max_tokens": max_tokens,
                    "temperature": temperature, "seed": seed, "think": think, "num_ctx": self.num_ctx}
@@ -51,7 +53,8 @@ class LLM:
                     break
             ev.wait()
         try:
-            return self._call(k, msgs, max_tokens, temperature, seed, think, timeout)
+            with self._slots:
+                return self._call(k, msgs, max_tokens, temperature, seed, think, timeout)
         finally:
             with self._lock:
                 self._inflight.pop(k).set()

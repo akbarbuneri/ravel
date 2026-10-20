@@ -1,0 +1,53 @@
+{
+ "final": {
+  "clean|0|accuracy_only": "7f4dcf58d5d7",
+  "clean|0|hard_gates": "9d5d3baf0d31",
+  "clean|0|ravel": "b6d0b3fda2e8",
+  "clean|1|accuracy_only": "3294a87351d5",
+  "clean|1|hard_gates": "3294a87351d5",
+  "clean|1|ravel": "7be648862736",
+  "clean|2|accuracy_only": "671dadf546c3",
+  "clean|2|hard_gates": "671dadf546c3",
+  "clean|2|ravel": "671dadf546c3",
+  "adversarial|0|accuracy_only": "26baa3624608",
+  "adversarial|0|hard_gates": "9d5d3baf0d31",
+  "adversarial|0|ravel": "b6d0b3fda2e8",
+  "adversarial|1|accuracy_only": "3294a87351d5",
+  "adversarial|1|hard_gates": "3294a87351d5",
+  "adversarial|1|ravel": "7be648862736",
+  "adversarial|2|accuracy_only": "6096a8be9db8",
+  "adversarial|2|hard_gates": "671dadf546c3",
+  "adversarial|2|ravel": "671dadf546c3",
+  "noisy|0|accuracy_only": "9ff90136df4c",
+  "noisy|0|hard_gates": "9ff90136df4c",
+  "noisy|0|ravel": "79ef20af911b",
+  "noisy|1|accuracy_only": "aace92e1ecd2",
+  "noisy|1|hard_gates": "aace92e1ecd2",
+  "noisy|1|ravel": "09fad185ca46",
+  "noisy|2|accuracy_only": "88ca90f2ce74",
+  "noisy|2|hard_gates": "d28b78c173a2",
+  "noisy|2|ravel": "79a1eaf94ab4"
+ },
+ "args": {
+  "seeds": [
+   0,
+   1,
+   2
+  ],
+  "rounds": 4,
+  "k": 4,
+  "conditions": [
+   "clean",
+   "adversarial",
+   "noisy"
+  ],
+  "policies": [
+   "accuracy_only",
+   "hard_gates",
+   "ravel"
+  ],
+  "proposer": "qwen35-faster:latest",
+  "solver": "qwen3.5:4b",
+  "out": "/home/akbar/projects/ravel/ravel_research/results/study"
+ }
+}

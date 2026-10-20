@@ -1,0 +1,4 @@
+[round 1] jobs=9 new_evals=29 propose=0s eval=0s total=0s solver_live=0
+[round 2] jobs=10 new_evals=30 propose=0s eval=0s total=1s solver_live=0
+[round 3] jobs=17 new_evals=49 propose=0s eval=0s total=1s solver_live=0
+[round 4] jobs=20 new_evals=62 propose=6157s eval=3475s total=9653s solver_live=613

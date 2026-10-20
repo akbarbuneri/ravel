@@ -1,0 +1,20 @@
+\begin{tabular}{llrrrrrrrr}
+\toprule
+Condition & Policy & Test acc.\ (\%) [95\% CI] & $\Delta$ seed & Tok/q & Acc.\ edits & Unsafe acc. & Leak acc. & Unsafe final & Regr.\ (\%) \\
+\midrule
+Clean & Seed (no adaptation) & 58.3 [58.3, 58.3] & +0.0 & 192 & 0.0 & 0 & 0 & 0/3 & 0.0 \\
+ & Accuracy-only & 64.4 [54.2, 79.2] & +6.0 & 170 & 1.7 & 0 & 0 & 0/3 & 2.4 \\
+ & Hard gates & 56.9 [54.2, 59.7] & -1.4 & 181 & 1.3 & 0 & 0 & 0/3 & 3.2 \\
+ & RAVEL & 62.5 [54.2, 75.0] & +4.2 & 174 & 1.3 & 0 & 0 & 0/3 & 2.4 \\
+\midrule
+Adversarial proposer & Seed (no adaptation) & 58.3 [58.3, 58.3] & +0.0 & 192 & 0.0 & 0 & 0 & 0/3 & 0.0 \\
+ & Accuracy-only & 58.8 [58.3, 59.7] & +0.5 & 187 & 1.0 & 0 & 2 & 0/3 & 0.0 \\
+ & Hard gates & 56.9 [54.2, 59.7] & -1.4 & 181 & 1.3 & 0 & 0 & 0/3 & 3.2 \\
+ & RAVEL & 62.5 [54.2, 75.0] & +4.2 & 174 & 1.3 & 0 & 0 & 0/3 & 2.4 \\
+\midrule
+Noisy feedback & Seed (no adaptation) & 58.3 [58.3, 58.3] & +0.0 & 192 & 0.0 & 0 & 0 & 0/3 & 0.0 \\
+ & Accuracy-only & 66.7 [59.7, 72.2] & +8.3 & 175 & 2.0 & 0 & 0 & 0/3 & 1.6 \\
+ & Hard gates & 66.7 [59.7, 72.2] & +8.3 & 175 & 2.0 & 0 & 0 & 0/3 & 1.6 \\
+ & RAVEL & 68.5 [68.1, 69.4] & +10.2 & 170 & 1.3 & 0 & 0 & 0/3 & 0.0 \\
+\bottomrule
+\end{tabular}

@@ -123,6 +123,7 @@ class Analysis:
         """Every logged (parent, candidate) pair, judged by every policy variant on selection evidence,
         compared against held-out ground truth."""
         pols = make_policies(self.cfg)
+        pols.update(sweep_policies())
         seen = set()
         out = []
         for r in self.rounds:
@@ -154,6 +155,25 @@ class Analysis:
                     row[f"why_{name}"] = reason
                 out.append(row)
         return out
+
+
+ALPHAS = [0.01, 0.05, 0.10, 0.20, 0.30, 0.50]
+
+
+def sweep_policies():
+    """Exploratory (post hoc) sensitivity variants of RAVEL; not used in the trajectories."""
+    from dataclasses import replace as dc_replace
+    from ravel.policies import Policy
+    out = {}
+    base = dict(security=True, cost=True, regression=True, uncertainty=True, curated_evidence=True, fault_aware=True)
+    for a in ALPHAS:
+        out[f"sweep_alpha_{a}"] = Policy(f"sweep_alpha_{a}", cfg=dc_replace(Config(), alpha=a), **base)
+    out["sweep_no_size_cap"] = Policy("sweep_no_size_cap", cfg=Config(), ignore_static=("source_too_large",), **base)
+    out["sweep_hard_gates_no_size_cap"] = Policy("sweep_hard_gates_no_size_cap", cfg=Config(), security=True, cost=True,
+                                                 regression=True, ignore_static=("source_too_large",))
+    for e in [0.05, 0.10, 0.20, 0.30]:
+        out[f"sweep_eps_{e}"] = Policy(f"sweep_eps_{e}", cfg=dc_replace(Config(), max_regression=e), **base)
+    return out
 
 
 def boot_ci(x, n=10000, seed=0):

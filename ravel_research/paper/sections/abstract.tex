@@ -1,0 +1,24 @@
+\begin{abstract}
+Methods that let a model revise its own agent harness, the executable program that organizes model
+calls and tool use, usually accept a revision when it raises a development score. We study that
+acceptance step on its own. We introduce \textbf{RAVEL}, an acceptance policy that combines static and
+runtime security gates, an upper confidence bound on per-question cost, a Wilson bound on regressions over a
+curated protected suite, an exact paired test for improvement, and fault-aware comparison. We also
+introduce \textbf{FinSynth}, a deterministic synthetic financial-agent testbed with Arabic questions, an
+entitlement-sensitive portfolio API, prompt-injection documents, transient upstream faults, and held-out
+question templates. With a real untrained Qwen3.5-9B proposer, a Qwen3.5-4B solver, and a network-isolated
+sandbox, we compare accuracy-only acceptance (the test-time rule of harness learning), point-estimate hard
+gates, and RAVEL under matched budgets in clean, adversarial-proposer and noisy-feedback conditions
+(224 candidate decisions, 36 four-round trajectories, one consumer GPU).
+Accuracy-only gates passed 23\% of candidates that were harmful on held-out ground truth, including an
+entitlement bypass that also raised accuracy. When the proposer was adversarial, an answer-leak edit that
+scored 100\% on development data captured the incumbent and froze adaptation (held-out gain +0.5\,pp,
+versus +6.0\,pp clean). RAVEL passed 6\% of harmful candidates, never accepted a mutated edit (its
+outcomes were identical with and without the adversary), and beat point-estimate hard gates by +4.3\,pp
+held-out accuracy (95\% CI [0.5, 8.8]). It was \emph{not} reliably better than accuracy-only
+(+1.2\,pp, CI [$-5.9$, 7.7]). Its conservatism rejected 13 of 20 beneficial candidates, 9 of them through
+an uncalibrated source-size cap. We also find that no gate repairs a vulnerability absent from the
+objective, and that stacked revisions bloat harnesses until the proposer fails. Acceptance is a
+statistical decision with real costs on both sides, and it deserves the same scrutiny as proposal
+generation.
+\end{abstract}

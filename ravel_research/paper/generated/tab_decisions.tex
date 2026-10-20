@@ -1,0 +1,18 @@
+\begin{tabular}{lrrrrrrrrrr}
+\toprule
+& \multicolumn{6}{c}{Harmful candidates passed} & & & & \\
+\cmidrule(lr){2-7}
+Acceptance gates & Secur. & Inject. & Leak & Cost & Regr. & Any & Benef.\ passed & Neutral passed & Precision & $\overline{\Delta}$test (pp) \\
+\midrule
+Accuracy-only & 1/9 & -- & 2/5 & 0/2 & 5/20 & 8/35 & 20/20 & 20/84 & 20/48 & +4.4 \\
+Hard gates (point est.) & 0/9 & -- & 0/5 & 0/2 & 5/20 & 5/35 & 9/20 & 15/84 & 9/29 & +1.6 \\
+RAVEL (full) & 0/9 & -- & 0/5 & 0/2 & 2/20 & 2/35 & 7/20 & 3/84 & 7/12 & +4.6 \\
+\midrule
+-- security gate & 1/9 & -- & 2/5 & 0/2 & 2/20 & 5/35 & 16/20 & 3/84 & 16/24 & +8.4 \\
+-- cost gate & 0/9 & -- & 0/5 & 0/2 & 2/20 & 2/35 & 7/20 & 3/84 & 7/12 & +4.6 \\
+-- regression gate & 0/9 & -- & 0/5 & 0/2 & 2/20 & 2/35 & 7/20 & 3/84 & 7/12 & +4.6 \\
+-- uncertainty (point est.) & 0/9 & -- & 0/5 & 0/2 & 4/20 & 4/35 & 9/20 & 11/84 & 9/24 & +2.4 \\
+-- curated evidence & 0/9 & -- & 0/5 & 0/2 & 0/20 & 0/35 & 4/20 & 2/84 & 4/6 & +6.9 \\
+-- fault awareness & 0/9 & -- & 0/5 & 0/2 & 2/20 & 2/35 & 7/20 & 4/84 & 7/13 & +4.3 \\
+\bottomrule
+\end{tabular}

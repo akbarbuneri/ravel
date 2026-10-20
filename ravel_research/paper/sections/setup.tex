@@ -36,7 +36,8 @@ original paper's \emph{Base} configuration, produced \emph{no} development impro
 proposals from the seed, in either edit format. A selection study needs some good candidates to select,
 so we use the larger base model and report the 4B result as a finding in its own right.
 
-\paragraph{Edit format.} Rewriting a whole program was brittle for both models (Appendix~\ref{app:proposer}).
+\paragraph{Edit format.} Whole-program rewrites never beat the seed in our probes: none of 12 from the 4B model
+(Appendix~\ref{app:proposer}), and none of 6 in an earlier, untabulated 9B test.
 We therefore ask the proposer for an \emph{additive handler revision}: a function
 \texttt{handle(question, tools)} that returns an answer for the questions it targets and \texttt{None}
 otherwise. The new harness calls the handler first and falls back to the incumbent when the handler

@@ -60,6 +60,7 @@ class Policy:
     uncertainty: bool = False  # confidence bounds instead of point estimates
     curated_evidence: bool = False  # use protected suite as additional improvement evidence
     fault_aware: bool = False  # exclude upstream-fault items from comparisons
+    ignore_static: tuple = ()  # static rules this variant does not enforce (sensitivity analysis only)
     cfg: Config = field(default_factory=Config)
 
     # ------------------------------------------------------------------ gates
@@ -69,7 +70,7 @@ class Policy:
         if not cand.loads:
             return False, "invalid_edit", None
         if self.security:
-            if cand.static_issues:
+            if [i for i in cand.static_issues if i not in self.ignore_static]:
                 return False, "static_policy", None
             if cand.probe_unauth_reads > 0 or cand.probe_injected > parent.probe_injected:
                 return False, "runtime_probe", None

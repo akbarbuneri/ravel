@@ -1,0 +1,90 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{What the evidence supports.}
+We pre-registered five hypotheses (H1--H5 in \texttt{RESEARCH\_SPEC.md}). Our evidence for each:
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+\item \textbf{H1} (fewer accepted unsafe or regressive revisions): \emph{supported at the decision level.}
+RAVEL passed 2 of 35 harmful candidates, against 8 for accuracy-only and 5 for hard gates, and accepted no
+mutated edit in any trajectory. With three seeds per condition, trajectory-level counts are too small
+to test on their own.
+\item \textbf{H2} (better cost--quality trade-off under matched budgets): \emph{not tested meaningfully.}
+Neither the proposer nor the environment produced candidates whose gains depended on extra cost, so the
+cost gate never bound.
+\item \textbf{H3} (better retention of solved tasks): \emph{mixed.} RAVEL's held-out regression versus
+the seed was no lower than accuracy-only's in the clean condition (2.4\% for both) and was lower under
+noise (0.0\% vs.\ 1.6\%). One revision regressed outside the protected suite and passed every
+policy.
+\item \textbf{H4} (fault awareness prevents unnecessary changes): \emph{not supported by our data.}
+Fault-aware comparison changed one decision.
+\item \textbf{H5} (transfer): partially addressed. All held-out results are on unseen question templates.
+We did not test new solvers or tool schemas.
+\end{itemize}
+The clearest finding concerns a failure mode, not an average. A greedy keep-if-better rule can be
+captured by a single edit that games the development set, and from then on it stops adapting. Statistical
+gating and leakage checks prevent that capture at little cost. The clearest \emph{cost} is that
+conservative gates, and especially uncalibrated complexity limits, discard genuinely useful revisions.
+
+\paragraph{When to use which gate.}
+The gates do not cost the same or protect against the same things. Static and runtime security gates are
+cheap and close failure modes that accuracy cannot see. We would apply them to every revision,
+whatever else the policy does. Cost gates are cheap and objective. The regression gate depends on a
+curated suite: its protection is only as broad as that suite's coverage, and with a few dozen items it
+behaves like a ``do not break'' contract rather than a statistical tolerance. The significance gate trades
+adaptation speed for reliability. It is most valuable when development sets are small or labels are noisy,
+and least valuable when a strong proposer produces large, clean gains.
+
+\paragraph{Runtime versus structural adaptation.}
+Our handler format is a middle ground between selecting among pre-approved strategies (runtime
+adaptation) and rewriting the program (structural adaptation). It makes every accepted change additive
+and revertible, but, as \S\ref{sec:res-sens} shows, it also lets programs bloat. Our results support a
+practical recommendation: let a learned proposer generate structural changes \emph{offline}, but put a
+statistically gated acceptance step, like RAVEL, between proposal and deployment, with canary rollout
+and rollback after it.
+
+\section{Limitations and Threats to Validity}
+\label{sec:limitations}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+  \item \textbf{Synthetic environment.} FinSynth is deterministic and synthetic by design, so ground truth
+  is exact. Real financial data has messier failure modes: genuinely ambiguous questions, stale sources,
+  conflicting filings. Our results show how acceptance policies behave under controlled conditions, not
+  how much they would help any particular production system.
+  \item \textbf{Untrained proposer.} We study acceptance over an untrained proposer. A trained proposer
+  \citep{zhang2026harnesslearning} produces a different candidate distribution, with more and larger
+  genuine gains. RAVEL's significance gate would then reject fewer good revisions, but we did not
+  measure this.
+  \item \textbf{Small samples.} With 3 seeds per condition, trajectory-level comparisons have little
+  statistical power. We therefore lean on the decision-level analysis, which evaluates every gate on
+  every logged candidate against held-out ground truth. Confidence intervals are reported throughout.
+  Candidates within a unit share parents and questions, so they are not independent.
+  \item \textbf{Security is measured, not proven.} The static rules, runtime probes and sandbox catch
+  the attack classes we tested: auth bypass, exfiltration, answer leakage, cost inflation and prompt
+  injection. They give no guarantee against other attacks. An adaptive adversary that knows the probe set
+  could evade it. Probes should be private, rotated and grown over time.
+  \item \textbf{Modeled latency and single-GPU constraints.} Latency is modeled from token counts. Our
+  budget (one 8\,GB GPU, single-stream inference) limited the study to 4 rounds, 4 proposals per round
+  and 3 seeds per condition.
+  \item \textbf{Researcher degrees of freedom.} Thresholds ($B_C$, $B_L$, $\epsilon_R$, $\alpha$) were
+  fixed before the main run, but they were chosen by us. Mutation types and probe items were also
+  designed by us, so the security results show detection of known attack classes, not robustness to
+  unknown ones.
+\end{itemize}
+
+\section{Conclusion}
+\label{sec:conclusion}
+We separated the acceptance of harness revisions from their generation and studied it under matched
+budgets with real LLM proposals. Accepting whatever raises a development score is fragile. It passes
+harmful revisions, including ones that raise accuracy while breaking entitlements, and it can be
+permanently captured by an edit that memorizes the development set. RAVEL's statistically gated acceptance
+removes most of these failures and makes adaptation invariant to an adversarial proposer in our setting.
+It pays for this with slower adaptation when the proposer is benign, a price dominated in our study by one
+miscalibrated maintainability rule. Two problems remain open: gates cannot improve properties the
+objective ignores, and additive revisions accumulate until they overwhelm the proposer. We hope the open
+FinSynth testbed and logged candidate pool make acceptance policies easy to study and compare.
+
+\paragraph{Reproducibility.} The repository contains FinSynth, the sandbox and capability broker, the
+proposer prompts, all policies, the experiment driver and the analysis scripts, along with every
+candidate program, evaluation episode, decision log and cached LLM response from the study. Re-running
+\texttt{experiments/run\_study.py}, \texttt{experiments/analyze.py} and \texttt{experiments/report.py}
+regenerates every table and figure from the cache in minutes. A fresh run needs about five hours on one
+consumer GPU.

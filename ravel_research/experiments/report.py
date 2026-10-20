@@ -114,7 +114,7 @@ def decision_table(dec):
 
 
 def fig_curves(traj, conds, path):
-    fig, axes = plt.subplots(1, len(conds), figsize=(7.0, 2.3), sharey=True)
+    fig, axes = plt.subplots(1, len(conds), figsize=(7.0, 2.6), sharey=True)
     axes = np.atleast_1d(axes)
     for ax, c in zip(axes, conds):
         for p in POLICIES:
@@ -132,8 +132,9 @@ def fig_curves(traj, conds, path):
         ax.set_xlabel("Revision round")
         ax.set_xticks(range(m.shape[1]))
     axes[0].set_ylabel("Held-out test accuracy (%)")
-    axes[-1].legend(loc="lower right", fontsize=7.5)
-    fig.tight_layout()
+    h, l = axes[0].get_legend_handles_labels()
+    fig.legend(h, l, loc="lower center", ncol=4, fontsize=7.5, bbox_to_anchor=(0.5, -0.02))
+    fig.tight_layout(rect=(0, 0.08, 1, 1))
     fig.savefig(path + ".pdf")
     fig.savefig(path + ".png", dpi=200)
     plt.close(fig)
@@ -187,6 +188,44 @@ def fig_devtest(dec, path):
     plt.close(fig)
 
 
+def sweep(dec):
+    """Gate pass rates of RAVEL variants with different alpha / epsilon_R (exploratory, post hoc)."""
+    valid = [d for d in dec if d.get("valid")]
+    keys = sorted({k[5:] for d in valid for k in d if k.startswith("pass_sweep_")})
+    out = {}
+    for k in keys:
+        ps = [d for d in valid if d[f"pass_{k}"]]
+        out[k] = {"beneficial": (sum(d["beneficial"] for d in ps), sum(d["beneficial"] for d in valid)),
+                  "harmful": (sum(bool(d["harms"]) for d in ps), sum(bool(d["harms"]) for d in valid)),
+                  "neutral": (sum(1 for d in ps if not d["harms"] and not d["beneficial"]),
+                              sum(1 for d in valid if not d["harms"] and not d["beneficial"])),
+                  "mean_test_gain_passed": float(np.mean([d["test_gain"] for d in ps])) if ps else float("nan")}
+    return out
+
+
+def fig_sweep(sw, path):
+    al = sorted((float(k.split("_")[-1]), v) for k, v in sw.items() if k.startswith("sweep_alpha_"))
+    if not al:
+        return
+    fig, ax = plt.subplots(figsize=(3.4, 2.5))
+    xs = [a for a, _ in al]
+    for key, col, lab in (("beneficial", "#2a78d6", "Beneficial passed"), ("neutral", "#8c8b86", "Neutral passed"),
+                          ("harmful", "#e34948", "Harmful passed")):
+        ys = [100 * v[key][0] / max(1, v[key][1]) for _, v in al]
+        ax.plot(xs, ys, marker="o", ms=4, lw=2, color=col, label=lab)
+    ax.set_xscale("log")
+    ax.set_xticks(xs)
+    ax.set_xticklabels([f"{a:g}" for a in xs])
+    ax.axvline(0.10, color="#52514e", lw=0.8, ls=":")
+    ax.set_xlabel(r"Significance level $\alpha$ of gate G5")
+    ax.set_ylabel("Candidates passed (%)")
+    ax.legend(fontsize=7)
+    fig.tight_layout()
+    fig.savefig(path + ".pdf")
+    fig.savefig(path + ".png", dpi=200)
+    plt.close(fig)
+
+
 def paired_tests(traj, conds):
     """Per unit, compare final test accuracy of RAVEL vs other policies (exact sign test over non-ties)."""
     res = {}
@@ -221,12 +260,14 @@ def main():
     fig_gates(s2, os.path.join(a.out, "fig_gates"))
     fig_devtest(dec, os.path.join(a.out, "fig_devtest"))
     tests = paired_tests(traj, conds)
+    sw = sweep(dec)
+    fig_sweep(sw, os.path.join(a.out, "fig_sweep"))
     # rejection reasons of RAVEL on valid candidates
     why = defaultdict(int)
     for x in dec:
         if x.get("valid"):
             why[x["why_ravel"]] += 1
-    summary = {"trajectories": s1, "decisions": s2, "counts": counts, "paired_vs_ravel": tests,
+    summary = {"trajectories": s1, "decisions": s2, "counts": counts, "paired_vs_ravel": tests, "sweep": sw,
                "ravel_reasons": dict(why),
                "dev_test_corr": float(np.corrcoef([x["dev_gain"] for x in dec if x.get("valid")],
                                                   [x["test_gain"] for x in dec if x.get("valid")])[0, 1])}

@@ -1,10 +1,4 @@
-# Proposed paper outline
-1. Abstract (draft only after experiments)
-2. Introduction and failure modes
-3. Related work (Harness Learning, HarnessEvolve, HarnessDev, Rethinking Evaluation)
-4. RAVEL: uncertainty-aware acceptance and diagnostic adaptation
-5. Benchmark, splits, baselines, fairness and measurement methodology
-6. Experimental results (PENDING; no claims)
-7. Ablation, failure analysis and limitations (PENDING)
-8. Ethics, reproducibility, costs, threats to validity
-9. Conclusion (PENDING)
+# Paper status
+Complete draft: `paper/main.tex` builds `paper/main.pdf` (17 pages).
+Sections: abstract, introduction, related work, problem formulation, RAVEL, setup, results (trajectories, decision-level analysis, sensitivity and failure analyses), discussion (with a verdict on each hypothesis H1–H5), limitations, conclusion, appendices (prompts, proposer probe, mutations, static rules).
+Author block is a placeholder ("RAVEL Research"); replace it with real author names before submission.

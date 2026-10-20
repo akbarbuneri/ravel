@@ -1,6 +1,6 @@
 # RAVEL — Research Specification v0.1
 Date: 2026-10-19
-Status: preregistration proposal, not experimentally validated
+Status: v0.1 preregistration (19 Oct 2026). Executed as v1.0 on 19–20 Oct 2026 with these deviations, all reported in the paper: Qwen3.5-9B handler-mode proposer (the 4B proposer produced no improvements in a capability probe); 3 conditions × 3 seeds × 4 rounds × K=4 because of single-GPU compute; one financial environment (FinSynth); latency modeled from tokens. Results: paper/main.pdf.
 
 ## Research statement
 Investigate whether uncertainty-aware, budget-constrained and regression-preserving selection of LLM harness edits produces better operating-point tradeoffs than accuracy-only selection, under matched total optimization budgets and independently held-out environments.
